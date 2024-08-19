@@ -18,7 +18,6 @@ import OseItem from "./module/item/entity";
 import OseItemSheet from "./module/item/item-sheet";
 
 import * as chat from "./module/helpers-chat";
-import OseCombat from "./module/combat";
 import OSE from "./module/config";
 import registerFVTTModuleAPIs from "./module/fvttModuleAPIs";
 import handlebarsHelpers from "./module/helpers-handlebars";
@@ -56,7 +55,6 @@ Hooks.once("init", async () => {
   game.ose = {
     rollItemMacro: macros.rollItemMacro,
     rollTableMacro: macros.rollTableMacro,
-    oseCombat: OseCombat,
   };
 
   // Init Party Sheet handler
@@ -177,21 +175,6 @@ Hooks.on("renderSidebarTab", async (object, html) => {
     });
   }
 });
-
-Hooks.on("preCreateCombatant", (combat, data, options, id) => {
-  const init = game.settings.get(game.system.id, "initiative");
-  if (init === "group") {
-    OseCombat.addCombatant(combat, data, options, id);
-  }
-});
-
-Hooks.on("updateCombatant", OseCombat.debounce(OseCombat.updateCombatant), 100);
-Hooks.on("renderCombatTracker", OseCombat.debounce(OseCombat.format, 100));
-Hooks.on("preUpdateCombat", OseCombat.preUpdateCombat);
-Hooks.on(
-  "getCombatTrackerEntryContext",
-  OseCombat.debounce(OseCombat.addContextEntry, 100)
-);
 
 Hooks.on("renderChatLog", (app, html) => OseItem.chatListeners(html));
 Hooks.on("getChatLogEntryContext", chat.addChatMessageContextOptions);
